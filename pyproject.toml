@@ -3,8 +3,11 @@ requires = ["uv_build >= 0.9.28, <0.10.0"]
 build-backend = "uv_build"
 
 [project]
-name = "pyschedulers"
-version = "0.1.0"
+name = "pyscheduler"
+version = "0.0.1"
+authors = [
+	{name="John Manuel P. Carado", email="carado.johnp11q@gmail.com"}
+]
 description = "A Python CPU scheduling simulation package"
 readme = "README.md"
 requires-python = "==3.12.11"
