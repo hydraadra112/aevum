@@ -9,31 +9,39 @@ A unified Python module of CPU schedulers for educators and students, and for ed
 Here's an example implementation of FCFS scheduling:
 
 ```python
-# Using the built-in scheduler
-from pyscheduler import Process, run_fcfs_simulation
+# High-Level Approach (Fastest Way)
+from aevum.base import Process
+from aevum.utils import sort_processes_by_arrival
+from aevum.schedulers import run_fcfs_simulation
 
-processes = [
-    Process(1, 10),
-    Process(2, 5),
-    Process(3, 8)
-    ]
+# Define unsorted processes
+raw_data = [
+    Process(pid=1, burst_time=10, arrival_time=5),
+    Process(pid=2, burst_time=5, arrival_time=0),
+    Process(pid=3, burst_time=8, arrival_time=2)
+]
 
-results = run_fcfs_simulation(processes)
-print(results)
+# Aevum enforces order for FCFS to ensure simulation integrity
+ready_queue = sort_processes_by_arrival(raw_data)
+results = run_fcfs_simulation(ready_queue)
 
-# Or if you wish to experiment, you can reimplement the FCFS like this:
+print(f"Average Wait: {results['averages']['avg_waiting_time']}")
 
-from pyscheduler import calculate_turnaround_time, calculate_waiting_time
+# Low-Level Approach (For Experimentation and Control)
+from aevum.metrics import calculate_turnaround_time, calculate_waiting_time
+from aevum.base import ProcessResult
 
-for i in range(len(processes)):
-    current = processes[i]
-    previous = processes[i - 1] if i > 0 else None
+results_list = []
+current_time = 0
 
-    calculate_waiting_time(current, previous)
-    calculate_turnaround_time(current)
+for proc in ready_queue:
+    # Calculate metrics using Aevum's core logic
+    wait = calculate_waiting_time(proc.arrival_time, current_time)
+    tat = calculate_turnaround_time(proc.burst_time, wait)
+    comp = proc.arrival_time + tat # or current_time + proc.burst_time (if idle accounted)
 
-avg_wait = sum(p.waiting_time for p in processes) / len(processes)
-avg_tat = sum(p.turnaround_time for p in processes) / len(processes)
+    results_list.append(ProcessResult(proc, wait, tat, comp))
+    current_time = comp
 ```
 
 ---
