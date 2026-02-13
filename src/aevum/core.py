@@ -41,7 +41,6 @@ class SimulationEngine:
         remaining_times = {p.pid: p.burst_time for p in incoming}
         
         current_process: Process = None
-        current_process_start_time = 0
         current_job_runtime = 0 # Tracks how long current job has been running (for RR)
 
         # 2. The Loop
@@ -72,7 +71,6 @@ class SimulationEngine:
                     pass 
                 if next_process:
                     self.trace_log.append(f"T={self.clock.time}: Context Switch -> Process {next_process.pid}")
-                    current_process_start_time = self.clock.time
                 
                 current_process = next_process
                 current_job_runtime = 0 # Reset runtime tracker for the new guy

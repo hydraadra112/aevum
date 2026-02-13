@@ -1,4 +1,4 @@
-from aevum.base import Process
+from aevum.core import Process
 from abc import ABC, abstractmethod
 from typing import List, Dict, Optional
 
