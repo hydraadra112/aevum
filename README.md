@@ -21,7 +21,9 @@ def main():
         Process(pid=5, burst_time=5, arrival_time=4),
     ]
 
-    engine = SimulationEngine(RR(time_quantum=3))
+    dispatcher_latency = 2 # optional, default to 0
+
+    engine = SimulationEngine(RR(time_quantum=3), dispatcher_latency)
     res = engine.run(processes)
     print(res)
 
@@ -39,10 +41,10 @@ Supported:
 - [x] Shortest Job First (SJF)
 - [x] Shortest Time to Completion (STCF)
 - [x] Round Robin (RR)
+- [x] Dispatcher Feature
 
 Plans:
 
-- [ ] Dispatcher Feature - To control the context switching for more accuracy in simulation
 - [ ] Visualizer Module - Visualizes output in the terminal
 
 I will add more algorithms and features in the future, but I aim to finish the todo lists above before I publish it officially as a Python package.
