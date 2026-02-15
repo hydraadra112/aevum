@@ -1,6 +1,7 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Union, Optional
 from aevum.types import Process, ProcessResult
 from aevum.policies import SchedulerPolicy
+from dataclasses import dataclass
 
 class Clock:
     def __init__(self):
@@ -43,14 +44,38 @@ class Dispatcher:
         else:    
             self.current_switch_remaining -= 1
 
+@dataclass
+class TraceEvent:
+    time: int
+    event_type: str  # "ARRIVAL", "SWITCH", "EXEC", "IDLE", "FINISHED"
+    pid: Optional[Union[int, str]] = None
+
+class Tracer:
+    def __init__(self):
+        self.events: List[TraceEvent] = []
+        self._log: List[str] = []
+
+    def record(self, time: int, event_type: str, pid: Optional[Union[int, str]] = None, msg: str = ""):
+        """Records a structured event and a string message simultaneously."""
+        self.events.append(TraceEvent(time, event_type, pid))
+        if msg:
+            self._log.append(f"T={time}: {msg}")
+
+    def get_log(self) -> List[str]:
+        return self._log
+
+    def get_structured_data(self) -> List[TraceEvent]:
+        return self.events
+
 class SimulationEngine:
     def __init__(self, policy: SchedulerPolicy, dispatch_latency: int = 0):
         self.policy = policy
         self.clock = Clock()
+        self.tracer = Tracer()
         self.dispatcher = Dispatcher(dispatch_latency=dispatch_latency)
         self.results: List[ProcessResult] = []
         self.trace_log: List[str] = []
-        self.total_idle_time = 0 # Professor 1's requested metric
+        self.total_idle_time = 0
         self.total_switch_time = 0
         
     def run(self, processes: List[Process]) -> Dict:
@@ -67,7 +92,7 @@ class SimulationEngine:
             while incoming and incoming[0].arrival_time <= self.clock.time:
                 new_proc = incoming.pop(0)
                 ready_queue.append(new_proc)
-                self.trace_log.append(f"T={self.clock.time}: Process {new_proc.pid} arrived.")
+                self.tracer.record(self.clock.time, "ARRIVAL", new_proc.pid, f"Process {new_proc.pid} arrived.")
 
             # 2. Decision Logic
             # We check if we need to switch even if current_process just finished
@@ -81,7 +106,8 @@ class SimulationEngine:
                         self.dispatcher.start_switch(potential_next.pid if potential_next else None)
                         next_process = potential_next
                         # Note: We don't clear current_process yet; it's being swapped out
-                        self.trace_log.append(f"T={self.clock.time}: STARTING SWITCH to P{potential_next.pid if potential_next else 'Idle'}")
+                        self.tracer.record(self.clock.time, "SWITCH_START", next_process.pid if next_process else "Idle", 
+                                       f"STARTING SWITCH to P{next_process.pid if next_process else 'Idle'}")
                     else:
                         current_process = potential_next
                         current_job_runtime = 0
@@ -89,14 +115,14 @@ class SimulationEngine:
             # 3. Execution Phase
             if self.dispatcher.is_currently_switching:
                 self.total_switch_time += 1
-                self.dispatcher.tick()
-                self.trace_log.append(f"T={self.clock.time}: Dispatcher busy...")
-                
+                self.tracer.record(self.clock.time, "SWITCH", next_process.pid if next_process else "Idle", "Dispatcher busy...")
+                self.dispatcher.tick()                
                 if not self.dispatcher.is_currently_switching:
                     current_process = next_process
                     current_job_runtime = 0
             
             elif current_process:
+                self.tracer.record(self.clock.time, "EXEC", current_process.pid)
                 # Actual work happens here
                 remaining_times[current_process.pid] -= 1
                 current_job_runtime += 1
@@ -110,7 +136,7 @@ class SimulationEngine:
                     current_job_runtime = 0
             else:
                 self.total_idle_time += 1
-                self.trace_log.append(f"T={self.clock.time}: CPU Idle.")
+                self.tracer.record(self.clock.time, "IDLE", msg="CPU Idle.")
             
             self.clock.tick()
 
@@ -133,7 +159,14 @@ class SimulationEngine:
 
         return {
             "individual_results": [
-                {"pid": r.process.pid, "wait": r.waiting_time, "turnaround": r.turnaround_time, "completion": r.completion_time} 
+                {
+                    "pid": r.process.pid, 
+                    "arrival": r.process.arrival_time, 
+                    "burst": r.process.burst_time, 
+                    "wait": r.waiting_time, 
+                    "turnaround": r.turnaround_time, 
+                    "completion": r.completion_time
+                } 
                 for r in self.results
             ],
             "averages": {
@@ -142,5 +175,6 @@ class SimulationEngine:
                 "cpu_utilization": f"{utilization:.1f}%",
                 "hardware_efficiency": f"{efficiency:.1f}%"
             },
-            "trace": self.trace_log
+            "structured_trace": self.tracer.get_structured_data(),
+            "total_time": total_time
         }
