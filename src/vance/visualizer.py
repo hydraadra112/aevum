@@ -27,7 +27,7 @@ class Visualizer:
             if e.event_type in ["EXEC", "SWITCH", "IDLE"]:
                 cpu_map[e.time] = (e.event_type, e.pid)
 
-        print(f"\n{Visualizer._color('📊 AEVUM SYSTEMS GANTT CHART', 'bold')}")
+        print(f"\n{Visualizer._color('📊 VANCE GANTT CHART', 'bold')}")
         
         pids = sorted(results.keys())
         for pid in pids:
