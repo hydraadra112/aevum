@@ -1,4 +1,4 @@
-# **Aevum**
+# **vance**
 
 A unified Python module of CPU schedulers for educators and students, and for educational and simulation purposes.
 
@@ -10,9 +10,7 @@ Here's an example implementation of SJF scheduling:
 
 ```python
 # Sample implementation using the SJF scheduler
-from aevum.core import Process, SimulationEngine
-from aevum.policies import SJF
-from aevum.visualizer import Visualizer
+from aevum import Process, SimulationEngine, SJF, Visualizer
 
 p = [
 Process(pid=1, burst_time=5, arrival_time=0),

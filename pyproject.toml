@@ -3,8 +3,8 @@ requires = ["uv_build >= 0.9.28, <0.10.0"]
 build-backend = "uv_build"
 
 [project]
-name = "Aevum"
-dynamic = ["version"]
+name = "vance"
+version = "0.1.0"
 authors = [
 	{name="John Manuel P. Carado", email="carado.johnp11q@gmail.com"}
 ]
@@ -21,4 +21,3 @@ license-files=["LICEN[CS]E*"]
 Homepage="https://github.com/hydraadra112/aevum"
 Issues = "https://github.com/hydraadra112/aevum/issues"
 
-dependencies = []
