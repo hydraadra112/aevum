@@ -8,6 +8,7 @@ class Process:
     pid: int
     burst_time: int
     arrival_time: int = 0
+    priority_time: int = 0
 
 
 @dataclass(frozen=True)

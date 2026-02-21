@@ -31,11 +31,19 @@ class SchedulerPolicy(ABC):
           current_runtime: int:
           remaining_times: Dict[int:
           int: returns: The process to run next, or None for an idle CPU.
+          ready_queue: List[Process]:
+          current_process: Optional[Process]:
+          current_runtime: int:
+          remaining_times: Dict[int:
+          int]: 
+          ready_queue: List[Process]:
+          current_process: Optional[Process]:
+          current_runtime: int:
+          remaining_times: Dict[int:
           ready_queue: List[Process]: 
           current_process: Optional[Process]: 
           current_runtime: int: 
           remaining_times: Dict[int: 
-          int]: 
 
         Returns:
           Process | None: The process to run next, or None for an idle CPU.
@@ -227,3 +235,46 @@ class RR(SchedulerPolicy):
 
         # Otherwise, keep running the current guy
         return current_process
+
+class PriorityScheduler(SchedulerPolicy):
+    """Priority Scheduling policy (Non-preemptive).
+    
+    A scheduling algorithm that selects the waiting process with the highest
+    priority (the smallest integer value). In this non-preemptive
+    mode, the currently executing process maintains control of the CPU until
+    it completes its burst, even if a higher-priority process arrives in the
+    ready queue.
+
+    Args:
+
+    Returns:
+
+    """
+
+    def get_next_process(
+        self, ready_queue, current_process, _current_runtime, _remaining_times
+    ):
+        """
+
+        Args:
+          ready_queue: param current_process:
+          _current_runtime: param _remaining_times:
+          current_process: param _remaining_times:
+          _remaining_times: 
+
+        Returns:
+
+        """
+        # Non-preemptive: If running, don't stop.
+        if current_process: 
+            return current_process
+
+        if ready_queue:
+            # Find process with highest priority (0 is highest prio)
+            # If processes both have high prio, choose which is closest to arrival time
+            # If processes both have high prio and same arrival time, we choose by ID
+            best_candidate = min(ready_queue, key=lambda p: (p.priority_time, p.arrival_time, p.pid))
+            ready_queue.remove(best_candidate)
+            return best_candidate
+
+        return None
