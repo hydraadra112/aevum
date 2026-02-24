@@ -6,6 +6,9 @@ dist/
 wheels/
 *.egg-info
 
+# For the library's usage. Tired of having nitpick or restore staged main files every commit
+main.py
+
 # Virtual environments
 .venv
 
