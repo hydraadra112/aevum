@@ -1,5 +1,5 @@
 class Visualizer:
-    """ """
+    """ An entity to support visualization of CPU scheduling. """
     # ANSI Color Palette
     COLORS = {
         "blue": "\033[94m",
@@ -30,19 +30,15 @@ class Visualizer:
         )
 
     @staticmethod
-    def render_gantt(res: dict, custom_colors: dict = None):
+    def render_gantt(res: dict, custom_colors: dict = None) -> None:
         """Prints a color-coded Gantt chart using TraceEvents.
 
         Args:
           res: dict:
           custom_colors: dict:  (Default value = None)
-          res: dict:
-          custom_colors: dict:  (Default value = None)
-          res: dict: 
-          custom_colors: dict:  (Default value = None)
 
         Returns:
-
+            None
         """
         events = res["structured_trace"]
         total_time = res["total_time"]
@@ -103,16 +99,14 @@ class Visualizer:
         )
 
     @staticmethod
-    def display_summary(res: dict):
+    def display_summary(res: dict) -> None:
         """Prints a clean results table and efficiency metrics.
 
         Args:
           res: dict:
-          res: dict:
-          res: dict: 
 
         Returns:
-
+            None
         """
         print(f"\n{Visualizer._color('📋 PERFORMANCE SUMMARY', 'bold')}")
         head = f"{'PID':<4} | {'Arrival':<8} | {'Burst':<6} | {'Wait':<6} | {'TAT':<6} | {'Finish':<8}"
@@ -143,16 +137,14 @@ class Visualizer:
         )
 
     @staticmethod
-    def display_audit(res: dict):
+    def display_audit(res: dict) -> None:
         """Prints the step-by-step calculation for each process.
 
         Args:
           res: dict:
-          res: dict:
-          res: dict: 
 
         Returns:
-
+            None
         """
         print(f"\n{Visualizer._color('🧮 MATHEMATICAL AUDIT', 'bold')}")
         for r in sorted(res["individual_results"], key=lambda x: x["pid"]):

@@ -12,14 +12,16 @@ class Process:
 
 @dataclass
 class TraceEvent:
-    """ """
+    """ Represents a Tracer event. Event type shall include the following: 
+    "ARRIVAL", "SWITCH", "EXEC", "IDLE", "FINISHED"
+    """
     time: int
     event_type: str  # "ARRIVAL", "SWITCH", "EXEC", "IDLE", "FINISHED"
     pid: Optional[Union[int, str]] = None
 
 
 class Tracer:
-    """ """
+    """ Represents a CPU tracer, storing TraceEvent objects """
     def __init__(self):
         self.events: List[TraceEvent] = []
         self._log: List[str] = []
@@ -30,8 +32,8 @@ class Tracer:
         event_type: str,
         pid: Optional[Union[int, str]] = None,
         msg: str = "",
-    ):
-        """Records a structured event and a string message simultaneously.
+    ) -> None:
+        """ Records a structured event and a string message simultaneously.
 
         Args:
           time: int:
@@ -39,18 +41,9 @@ class Tracer:
           pid: Optional[Union[int:
           str: Default value = None)
           msg: str:  (Default value = "")
-          time: int:
-          event_type: str:
-          pid: Optional[Union[int:
-          str: Default value = None)
-          msg: str:  (Default value = "")
-          time: int: 
-          event_type: str: 
-          pid: Optional[Union[int: 
-          str]]:  (Default value = None)
-          msg: str:  (Default value = "")
 
         Returns:
+            None
 
         """
         self.events.append(TraceEvent(time, event_type, pid))
@@ -75,12 +68,13 @@ class ProcessResult:
     completion_time: int
 
 class Core:
+    """ Represents a CPU core """
     def __init__(self, core_id: int, dispatch_latency: int = 0):
         self.core_id = core_id
         self.dispatcher = Dispatcher(dispatch_latency)
         
         self.current_process: Optional[Process] = None
-        self.target_process: Optional[Process] = None # Who runs after the switch?
+        self.target_process: Optional[Process] = None
         
         # Hardware Metrics
         self.current_runtime: int = 0
