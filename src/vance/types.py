@@ -5,7 +5,6 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Process:
     """The input data for a process."""
-
     pid: int
     burst_time: int
     arrival_time: int = 0
